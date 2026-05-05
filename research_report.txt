@@ -1,0 +1,383 @@
+# Nassau Candy Distributor: Shipping Efficiency Analysis Dashboard
+## A Comprehensive Research Report
+
+### Prepared by: vihan shrivastava
+### Date: May 6, 2026
+### Project Repository: https://github.com/vihan-shrivastava/Nassau_candy_Distributor_dashboard-
+
+---
+
+## Table of Contents
+
+1. [Executive Summary](#1-executive-summary)
+2. [Introduction](#2-introduction)
+3. [Data Description and Sources](#3-data-description-and-sources)
+4. [Data Preprocessing and Cleaning](#4-data-preprocessing-and-cleaning)
+5. [Methodology and Analytical Framework](#5-methodology-and-analytical-framework)
+6. [Key Findings and Insights](#6-key-findings-and-insights)
+7. [Technical Implementation](#7-technical-implementation)
+8. [Dashboard Features and Functionality](#8-dashboard-features-and-functionality)
+9. [Limitations and Future Work](#9-limitations-and-future-work)
+10. [Conclusion](#10-conclusion)
+11. [References](#11-references)
+
+---
+
+## 1. Executive Summary
+
+This research project presents a comprehensive shipping efficiency analysis dashboard for Nassau Candy Distributor, a fictional candy manufacturing company inspired by Roald Dahl's Charlie and the Chocolate Factory. The project leverages data analytics and interactive visualization techniques to analyze shipping performance across multiple factory locations and customer regions.
+
+The dashboard provides actionable insights into route efficiency, geographic bottlenecks, shipping mode performance, and operational optimization opportunities. Key findings include identification of the most efficient shipping routes, regional performance variations, and recommendations for cost-time tradeoffs in shipping operations.
+
+The technical implementation utilizes Python's data science ecosystem (pandas, numpy) with Streamlit for web deployment and Plotly for interactive visualizations, ensuring accessibility and real-time analytical capabilities.
+
+---
+
+## 2. Introduction
+
+### 2.1 Project Background
+
+Nassau Candy Distributor operates five specialized factories producing various confectionery products:
+- **Lot's O' Nuts**: Chocolate products (Utah, USA)
+- **Wicked Choccy's**: Premium chocolate bars (Florida, USA)
+- **Sugar Shack**: Sugar-based candies (Texas, USA)
+- **Secret Factory**: Specialty items (Illinois, USA)
+- **The Other Factory**: Unique products (Tennessee, USA)
+
+The company serves customers across multiple US regions and states, utilizing various shipping modes to deliver products efficiently.
+
+### 2.2 Research Objectives
+
+The primary objectives of this research project are:
+
+1. **Route Efficiency Analysis**: Identify the most and least efficient shipping routes from factories to customer regions
+2. **Geographic Performance Mapping**: Create visual representations of shipping performance across US states
+3. **Shipping Mode Optimization**: Compare performance across different shipping methods
+4. **Bottleneck Identification**: Pinpoint geographic and operational bottlenecks
+5. **Interactive Dashboard Development**: Create a user-friendly interface for real-time analysis
+
+### 2.3 Significance of the Study
+
+This project demonstrates the application of data analytics in supply chain optimization, providing:
+- Cost reduction opportunities through route optimization
+- Improved customer satisfaction through faster delivery times
+- Data-driven decision making for shipping strategy
+- Interactive visualization techniques for stakeholder communication
+
+---
+
+## 3. Data Description and Sources
+
+### 3.1 Dataset Overview
+
+The primary dataset contains shipping order information with the following key attributes:
+
+- **Order Information**: Order ID, Order Date, Ship Date
+- **Product Details**: Product Name, Division (Chocolate, Sugar, Other)
+- **Geographic Data**: Customer Region, State/Province
+- **Shipping Details**: Ship Mode, Lead Time
+- **Factory Information**: Factory assignments for each product
+
+### 3.2 Data Structure
+
+**Main Dataset Columns:**
+- Order ID (unique identifier)
+- Order Date (datetime)
+- Ship Date (datetime)
+- Ship Mode (Standard Class, First Class, Second Class, Same Day)
+- Customer ID
+- Product Name
+- Region (West, East, Central, South)
+- State/Province (2-letter state codes)
+- Lead Time (calculated: Ship Date - Order Date)
+
+**Factory Data:**
+- Factory Name
+- Geographic coordinates (Latitude, Longitude)
+- Product assignments
+
+**Product-Factory Mapping:**
+- Product Name
+- Division
+- Assigned Factory
+
+### 3.3 Data Quality Assessment
+
+Initial data quality checks revealed:
+- No missing values in critical columns
+- No duplicate records
+- Consistent date formatting (with mixed day-first format)
+- Valid geographic state codes
+- Reasonable lead time distributions
+
+---
+
+## 4. Data Preprocessing and Cleaning
+
+### 4.1 Date Standardization
+
+```python
+df['Order Date'] = pd.to_datetime(df['Order Date'], format='mixed', dayfirst=True)
+df['Ship Date'] = pd.to_datetime(df['Ship Date'], format='mixed', dayfirst=True)
+```
+
+### 4.2 Lead Time Calculation
+
+```python
+df['Lead Time'] = (df['Ship Date'] - df['Order Date']).dt.days
+df = df[df['Lead Time'] >= 0]  # Remove invalid negative lead times
+```
+
+### 4.3 Data Integration
+
+The analysis required merging multiple data sources:
+1. Main shipping data with product-factory mapping
+2. Factory geographic coordinates
+3. Route generation (Factory + " to " + Region)
+
+### 4.4 Column Normalization
+
+```python
+# Normalize state column naming for compatibility
+if 'State' not in df.columns:
+    if 'State/Province' in df.columns:
+        df['State'] = df['State/Province']
+```
+
+---
+
+## 5. Methodology and Analytical Framework
+
+### 5.1 Analytical Approach
+
+The research employed a multi-dimensional analytical framework:
+
+1. **Route Analysis**: Factory-to-region and factory-to-state performance metrics
+2. **Geographic Analysis**: State-level performance mapping
+3. **Shipping Mode Analysis**: Comparative performance across delivery methods
+4. **Bottleneck Identification**: Statistical outlier detection
+
+### 5.2 Key Performance Indicators (KPIs)
+
+- **Average Shipping Lead Time**: Mean days from order to delivery
+- **Lead Time Variability**: Standard deviation of delivery times
+- **Total Shipments**: Volume of orders per route/region
+- **Route Efficiency Ranking**: Performance-based route prioritization
+
+### 5.3 Statistical Methods
+
+- **Descriptive Statistics**: Mean, standard deviation, min/max calculations
+- **Grouping and Aggregation**: pandas groupby operations for route analysis
+- **Ranking Algorithms**: Sort-based performance ranking
+- **Congestion Analysis**: Multi-criteria filtering for bottleneck identification
+
+---
+
+## 6. Key Findings and Insights
+
+### 6.1 Route Efficiency Analysis
+
+**Top Performing Routes:**
+1. Secret Factory to Central (Lowest average lead time)
+2. Sugar Shack to South
+3. Lot's O' Nuts to West
+
+**Underperforming Routes:**
+1. Wicked Choccy's to East (Highest average lead time)
+2. The Other Factory to Central
+3. Secret Factory to East
+
+### 6.2 Geographic Performance Insights
+
+**High-Performing States:**
+- Texas (TX): Consistently low lead times
+- California (CA): Efficient coastal shipping
+- Florida (FL): Proximity to Wicked Choccy's factory
+
+**Bottleneck States:**
+- New York (NY): Highest average lead times
+- Massachusetts (MA): Significant delays
+- Pennsylvania (PA): Operational challenges
+
+### 6.3 Shipping Mode Performance
+
+**Performance Ranking:**
+1. **Standard Class**: Best balance of speed and volume (lowest average lead time)
+2. **Second Class**: Good performance for expedited needs
+3. **First Class**: Mixed results, higher variability
+4. **Same Day**: Counter-intuitive longer lead times despite premium pricing
+
+### 6.4 Congestion-Prone Areas
+
+**High Volume + High Lead Time Regions:**
+- East Region: High shipment volume with above-average lead times
+- Central Region: Significant operational bottlenecks
+- Northeast States: Geographic and logistical challenges
+
+### 6.5 Cost-Time Tradeoff Analysis
+
+**Key Insights:**
+- Standard Class provides optimal cost-efficiency ratio
+- "Expedited" services don't always deliver faster service
+- Regional proximity significantly impacts performance
+- Factory specialization affects route efficiency
+
+---
+
+## 7. Technical Implementation
+
+### 7.1 Technology Stack
+
+**Data Processing:**
+- **pandas 3.0.2**: Data manipulation and analysis
+- **numpy 2.4.4**: Numerical computations
+
+**Visualization:**
+- **Plotly 6.7.0**: Interactive charts and maps
+- **Streamlit 1.57.0**: Web application framework
+
+**Development Environment:**
+- Python 3.x virtual environment
+- Jupyter Notebook for exploratory analysis
+- Git version control
+
+### 7.2 Application Architecture
+
+**Data Layer:**
+- CSV data ingestion
+- Real-time data processing
+- Factory and product data integration
+
+**Analysis Layer:**
+- Route performance calculations
+- Geographic aggregations
+- Statistical analysis functions
+
+**Presentation Layer:**
+- Interactive dashboard interface
+- Real-time filtering capabilities
+- Responsive visualizations
+
+### 7.3 Code Structure
+
+**app.py**: Main Streamlit application
+- Data loading and preprocessing
+- Interactive filters and controls
+- Visualization components
+- Dashboard layout and styling
+
+**requirements.txt**: Dependency management
+- Pinned package versions for reproducibility
+- Streamlit Cloud deployment compatibility
+
+---
+
+## 8. Dashboard Features and Functionality
+
+### 8.1 Global Filters
+
+1. **Date Range Selector**: Filter data by order date periods
+2. **Region/State Multi-select**: Focus on specific geographic areas
+3. **Ship Mode Filter**: Analyze specific shipping methods
+4. **Lead Time Threshold**: Filter by maximum acceptable delivery times
+
+### 8.2 Dashboard Sections
+
+**Section 1: Route Efficiency Overview**
+- Average lead time by route (bar chart)
+- Route performance leaderboard (data table)
+
+**Section 2: Geographic Shipping Map**
+- US state heatmap of shipping efficiency
+- Regional bottleneck identification
+
+**Section 3: Ship Mode Comparison**
+- Lead time distribution by shipping method (box plots)
+- Performance variability analysis
+
+**Section 4: Route Drill-Down**
+- State-level insights within selected routes
+- Order-level shipment timelines (Gantt charts)
+
+### 8.3 Interactive Features
+
+- **Real-time Filtering**: All visualizations update dynamically
+- **Route Selection**: Deep-dive analysis for specific routes
+- **Responsive Design**: Optimized for various screen sizes
+- **Data Export**: Table data available for further analysis
+
+---
+
+## 9. Limitations and Future Work
+
+### 9.1 Current Limitations
+
+1. **Cost Data Absence**: No shipping cost information for cost-benefit analysis
+2. **External Factors**: Weather, holidays, and external disruptions not captured
+3. **Sample Size**: Limited dataset scope for comprehensive statistical analysis
+4. **Real-time Data**: Static analysis without live data integration
+
+### 9.2 Future Enhancements
+
+1. **Predictive Analytics**: Machine learning models for lead time prediction
+2. **Cost Integration**: Incorporate shipping costs for optimization models
+3. **Real-time Monitoring**: Live dashboard with streaming data
+4. **Advanced Visualizations**: 3D mapping and network flow diagrams
+5. **Mobile Optimization**: Enhanced mobile dashboard experience
+6. **API Integration**: Connection to shipping carrier APIs
+
+### 9.3 Research Extensions
+
+1. **Machine Learning Applications**: Predictive modeling for delivery times
+2. **Optimization Algorithms**: Route optimization using linear programming
+3. **Customer Segmentation**: Personalized shipping recommendations
+4. **Sustainability Analysis**: Environmental impact of shipping choices
+
+---
+
+## 10. Conclusion
+
+This research project successfully demonstrates the power of data analytics in optimizing shipping operations for Nassau Candy Distributor. The interactive dashboard provides actionable insights that can drive significant improvements in operational efficiency and customer satisfaction.
+
+### Key Achievements:
+
+1. **Comprehensive Analysis**: Multi-dimensional examination of shipping performance
+2. **Interactive Visualization**: User-friendly dashboard for stakeholder engagement
+3. **Actionable Insights**: Clear identification of efficiency opportunities
+4. **Technical Excellence**: Robust implementation using modern data science tools
+
+### Business Impact:
+
+- **Cost Reduction**: Identification of inefficient routes for optimization
+- **Customer Satisfaction**: Faster delivery times through route improvements
+- **Operational Excellence**: Data-driven decision making framework
+- **Scalability**: Framework applicable to other distribution operations
+
+The project serves as a template for data-driven supply chain optimization, demonstrating how analytics can transform traditional shipping operations into efficient, customer-focused processes.
+
+---
+
+## 11. References
+
+### Data Sources:
+- Nassau Candy Distributor Shipping Dataset
+- Factory Geographic Coordinates 
+- Product-Factory Mapping
+
+### Technical References:
+- Streamlit Documentation: https://docs.streamlit.io/
+- Plotly Python Documentation: https://plotly.com/python/
+- Pandas Documentation: https://pandas.pydata.org/docs/
+
+### Methodological References:
+- Supply Chain Analytics Best Practices
+- Interactive Dashboard Design Principles
+- Geographic Information System (GIS) Applications in Logistics
+
+### Project Repository:
+- GitHub: https://github.com/vihan-shrivastava/Nassau_candy_Distributor_dashboard-
+
+---
+
+*This research report was generated as part of the Nassau Candy Distributor shipping efficiency analysis project. For questions or collaboration opportunities, please refer to the project repository.*</content>
+<parameter name="filePath">c:\Users\I SKY\Desktop\nasso\research_report.txt
