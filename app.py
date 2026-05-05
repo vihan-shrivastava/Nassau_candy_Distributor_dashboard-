@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-df=pd.read_csv(r"C:\Users\I SKY\Downloads/Nassau Candy Distributor.csv")
+df = pd.read_csv("Nassau Candy Distributor.csv")
 df['Order Date'] = pd.to_datetime(df['Order Date'], format='mixed', dayfirst=True)
 df['Ship Date'] = pd.to_datetime(df['Ship Date'], format='mixed', dayfirst=True)
 df['Lead Time'] = (df['Ship Date'] - df['Order Date']).dt.days
