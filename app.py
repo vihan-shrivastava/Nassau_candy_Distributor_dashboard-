@@ -43,7 +43,8 @@ import plotly.express as px
 # 'Lead Time', and 'Order ID'. Modify these string keys if yours differ.
 # -------------------------------------------------------------------------
 
-st.set_page_config(page_title="Shipping Efficiency Dashboard", layout="wide")
+st.set_page_config(page_title="Nassau Candy Distributor Dashboard", layout="wide")
+st.title("Nassau Candy Distributor Dashboard ")
 st.title("📦 Shipping & Route Efficiency Dashboard")
 
 # --- DATA PREPARATION ---
